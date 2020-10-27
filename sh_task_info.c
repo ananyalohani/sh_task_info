@@ -31,6 +31,11 @@ SYSCALL_DEFINE2(sh_task_info, long, pid, char *, filename)
 
 	long copied = strncpy_from_user(path, filename, sizeof(path));		// copy data from userspace to kernel space
 	struct task_struct *task = pid_task(find_vpid(pid), PIDTYPE_PID);	// get task corresponding to pid
+	if(task == NULL)
+	{
+		printk(KERN_ALERT "No such task with PID = %d\n.", pid);
+		return -1;
+	}
 
 	printk(KERN_INFO "Syscall loaded.\n");
 	f = filp_open(path, O_WRONLY|O_CREAT, 0);		// open the file
