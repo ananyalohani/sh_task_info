@@ -1,5 +1,5 @@
 #Do Not Change This File
-compile: clean
+compile:
 	gcc test.c
 
 run: compile

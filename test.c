@@ -11,7 +11,7 @@
 
 int main(int argc, char **argv)
 {
-   long res = syscall(SH_TASK_INFO, 1196, "task_details.txt");
+   long res = syscall(SH_TASK_INFO, 1, "task_details.txt");
    if(res != 0)
    {
       perror("Error");
