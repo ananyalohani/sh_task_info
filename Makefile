@@ -1,7 +1,6 @@
-// Do Not Change This File
+#Do Not Change This File
 compile:
 	gcc test.c
 
 run: compile
 	./a.out
-

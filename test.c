@@ -2,24 +2,17 @@
    Name: Ananya Lohani
    Roll_Number: 2019018 
 */
-#include <stdio.h>
 #include <unistd.h>
-#include <linux/kernel.h>
 #include <sys/syscall.h>
-#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-int main(int argc, char *argv[])
+#define SH_TASK_INFO 440
+
+int main(int argc, char **argv)
 {
-   pid_t pid = (pid_t)atoi(argv[1]);
-   long res = syscall(548, pid, argv[2]);
-   if(res == 0)
-   {
-      printf("System call successful.");
-   }
-   else 
-   {
-      perror("Error: ");
-      fprintf(stderr, "Error number: %d\n", errno);
-   }
+   long res = syscall(SH_TASK_INFO, 1000, "task_details.txt");
+   system("dmesg | tail");
+   printf("System call returned %ld.\n", res);
    return 0;
 }
