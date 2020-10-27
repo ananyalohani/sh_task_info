@@ -1,60 +1,57 @@
-#include <linux/sched.h>
-#include <linux/init.h>
-#include <uapi/asm-generic/errno-base.h>
-#include <linux/syscalls.h>
-#include <fcntl.h>
-#include <asm/uaccess.h>
-#include <fs.h>
-#include <linux/kernel.h>
-
-asmlinkage long sys_sh_task_info(pid_t pid, char *filename);
-long check_pid(pid_t pid);
-long check_file(int fd); 
-
-asmlinkage long sys_sh_task_info(pid_t pid, char *filename)
+SYSCALL_DEFINE2(sh_task_info, long, pid, char *, filename)
 {
-	long res = check_pid(pid);
-	if(res != 0) return res;
-
-	int fd = sys_open(filename, O_WRONLY | O_CREAT, 0644);
-	res = check_file(fd);
-	if(res < 0) return res;
-
-	struct task_struct *task;
-	char *str = (char *)malloc(2000);
-	
-	mm_segment_t prev_fs = get_fs();
-	set_fs(KERNEL_DS);
-
-	for_each_process(task)
-	{
-		if(pid == task->pid)
-		{
-			sprintf(str, "Process Name: %s\nPID_Number: %ld\nProcess State: %ld\nPriority: %ld\n", task->comm, (long)task->pid, (long)task->state, (long)task->prio);
-			res = sys_write(fd, str, strlen(str));
-			if(res < 0) return -errno;
-			printk("%s",str);
-		}
-	}
-	set_fs(prev_fs);
-	free(str);
-	return 0;
-}
-
-long check_pid(pid_t pid)
-{
+	// check pid range
 	if(pid < 1 || pid > 2147483647)
 	{
+		printk(KERN_ALERT "Invalid value of PID.\n");
 		return -EINVAL;
 	}
-	return 0;
-}
 
-long check_file(int fd)
-{
-	if(fd < 0)
+	struct file *f;
+	const int BUF_SIZE = 200;
+	char path[BUF_SIZE], buf[BUF_SIZE];
+	int i = 0;
+	int res;
+
+	// initialize char arrays
+	for(; i < BUF_SIZE; i++)
 	{
-		return -errno;
+		path[i] = 0;
+		buf[i] = 0;
 	}
-	return 0;
+
+	long copied = strncpy_from_user(path, filename, sizeof(path));		// copy data from userspace to kernel space
+	struct task_struct *task = pid_task(find_vpid(pid), PIDTYPE_PID);	// get task corresponding to pid
+
+	printk(KERN_INFO "Syscall loaded.\n");
+	f = filp_open(path, O_WRONLY|O_CREAT, 0);		// open the file
+	if(f == NULL)
+	{
+		printk(KERN_ALERT "Error in opening the file.\n");
+		return -1;
+	}
+	if(copied < 0)
+	{
+		printk(KERN_ALERT "Error in copying data from userspace.\n");
+		return -1;
+	}
+
+	// copy task_struct details to buf
+	copied = sprintf(buf, "Process: %s\nPID: %ld\nProcess State: %ld\nPriority: %ld\n", task->comm, (long) task->pid, (long) task->state, (long) task->prio);
+	if(copied < 0)
+	{
+		printk(KERN_ALERT "Error in sprintf().\n");
+		return -1;
+	}
+
+	res = kernel_write(f, buf, copied, &f->f_pos);		// write buf to file
+	if(res < 0)
+	{
+		printk(KERN_ALERT "Error in writing to the file.\n");
+		return -1;	
+	}
+	printk(KERN_INFO "%s",buf);		// print buf to kernel logs
+	filp_close(f, NULL);			 // close the file
+
+  	return 0;
 }
