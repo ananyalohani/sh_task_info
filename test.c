@@ -11,7 +11,7 @@
 
 int main(int argc, char **argv)
 {
-   long res = syscall(SH_TASK_INFO, 1000, "task_details.txt");
+   long res = syscall(SH_TASK_INFO, 1, "task_details.txt");
    system("dmesg | tail");
    printf("System call returned %ld.\n", res);
    return 0;
