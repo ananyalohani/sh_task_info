@@ -56,7 +56,7 @@ SYSCALL_DEFINE2(sh_task_info, long, pid, char *, filename)
 
 	// copy task_struct details to buf
 	int len = 0;
-	len = snprintf(buf, BUF_SIZE, "Process: %s\nPID: %ld\nProcess State: %ld\nPriority: %ld\nParent Process PID: %ld\n", task->comm, (long)task->pid, (long)task->state, (long)task->prio, (long)task->parent->pid);
+	len = snprintf(buf, BUF_SIZE, "Process: %s\nPID: %ld\nProcess State: %ld\nVirtual Runtime: %ldns\nPriority: %ld\nParent Process PID: %ld\n", task->comm, (long)task->pid, (long)task->state, (long)task->se.vruntime, (long)task->prio, (long)task->parent->pid);
 	if(len < 0)
 	{
 		printk(KERN_ALERT "Error in snprintf().\n");
