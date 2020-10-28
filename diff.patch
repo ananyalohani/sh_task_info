@@ -1,7 +1,6 @@
-diff --git a/arch/x86/entry/syscalls/syscall_64.tbl b/arch/x86/entry/syscalls/syscall_64.tbl
-index f30d6ae9a..ab8b7d5b4 100644
---- a/arch/x86/entry/syscalls/syscall_64.tbl
-+++ b/arch/x86/entry/syscalls/syscall_64.tbl
+diff --color -bur linux-5.9.1/arch/x86/entry/syscalls/syscall_64.tbl my-linux-5.9.1/arch/x86/entry/syscalls/syscall_64.tbl
+--- linux-5.9.1/arch/x86/entry/syscalls/syscall_64.tbl	2020-10-17 06:31:22.000000000 +0000
++++ my-linux-5.9.1/arch/x86/entry/syscalls/syscall_64.tbl	2020-10-26 12:59:03.083960103 +0000
 @@ -361,6 +361,7 @@
  437	common	openat2			sys_openat2
  438	common	pidfd_getfd		sys_pidfd_getfd
@@ -10,10 +9,9 @@ index f30d6ae9a..ab8b7d5b4 100644
  
  #
  # x32-specific system call numbers start at 512 to avoid cache impact
-diff --git a/kernel/sys.c b/kernel/sys.c
-index ab6c409b1..a3d67787f 100644
---- a/kernel/sys.c
-+++ b/kernel/sys.c
+diff --color -bur linux-5.9.1/kernel/sys.c my-linux-5.9.1/kernel/sys.c
+--- linux-5.9.1/kernel/sys.c	2020-10-17 06:31:22.000000000 +0000
++++ my-linux-5.9.1/kernel/sys.c	2020-10-28 07:03:28.190729550 +0000
 @@ -4,7 +4,7 @@
   *
   *  Copyright (C) 1991, 1992  Linus Torvalds
@@ -23,7 +21,7 @@ index ab6c409b1..a3d67787f 100644
  #include <linux/export.h>
  #include <linux/mm.h>
  #include <linux/utsname.h>
-@@ -2695,3 +2695,85 @@ COMPAT_SYSCALL_DEFINE1(sysinfo, struct compat_sysinfo __user *, info)
+@@ -2695,3 +2695,85 @@
  	return 0;
  }
  #endif /* CONFIG_COMPAT */
